@@ -193,7 +193,7 @@ var require_file_command = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.prepareKeyValueMessage = exports2.issueFileCommand = void 0;
     var crypto = __importStar(require("crypto"));
-    var fs8 = __importStar(require("fs"));
+    var fs9 = __importStar(require("fs"));
     var os = __importStar(require("os"));
     var utils_1 = require_utils();
     function issueFileCommand(command, message) {
@@ -201,10 +201,10 @@ var require_file_command = __commonJS({
       if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
       }
-      if (!fs8.existsSync(filePath)) {
+      if (!fs9.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
       }
-      fs8.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
+      fs9.appendFileSync(filePath, `${(0, utils_1.toCommandValue)(message)}${os.EOL}`, {
         encoding: "utf8"
       });
     }
@@ -1007,14 +1007,14 @@ var require_util = __commonJS({
         }
         const port = url.port != null ? url.port : url.protocol === "https:" ? 443 : 80;
         let origin = url.origin != null ? url.origin : `${url.protocol}//${url.hostname}:${port}`;
-        let path8 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
+        let path9 = url.path != null ? url.path : `${url.pathname || ""}${url.search || ""}`;
         if (origin.endsWith("/")) {
           origin = origin.substring(0, origin.length - 1);
         }
-        if (path8 && !path8.startsWith("/")) {
-          path8 = `/${path8}`;
+        if (path9 && !path9.startsWith("/")) {
+          path9 = `/${path9}`;
         }
-        url = new URL(origin + path8);
+        url = new URL(origin + path9);
       }
       return url;
     }
@@ -2628,20 +2628,20 @@ var require_parseParams = __commonJS({
 var require_basename = __commonJS({
   "node_modules/@fastify/busboy/lib/utils/basename.js"(exports2, module2) {
     "use strict";
-    module2.exports = function basename(path8) {
-      if (typeof path8 !== "string") {
+    module2.exports = function basename(path9) {
+      if (typeof path9 !== "string") {
         return "";
       }
-      for (var i = path8.length - 1; i >= 0; --i) {
-        switch (path8.charCodeAt(i)) {
+      for (var i = path9.length - 1; i >= 0; --i) {
+        switch (path9.charCodeAt(i)) {
           case 47:
           // '/'
           case 92:
-            path8 = path8.slice(i + 1);
-            return path8 === ".." || path8 === "." ? "" : path8;
+            path9 = path9.slice(i + 1);
+            return path9 === ".." || path9 === "." ? "" : path9;
         }
       }
-      return path8 === ".." || path8 === "." ? "" : path8;
+      return path9 === ".." || path9 === "." ? "" : path9;
     };
   }
 });
@@ -5671,7 +5671,7 @@ var require_request = __commonJS({
     }
     var Request = class _Request {
       constructor(origin, {
-        path: path8,
+        path: path9,
         method,
         body,
         headers,
@@ -5685,11 +5685,11 @@ var require_request = __commonJS({
         throwOnError,
         expectContinue
       }, handler) {
-        if (typeof path8 !== "string") {
+        if (typeof path9 !== "string") {
           throw new InvalidArgumentError("path must be a string");
-        } else if (path8[0] !== "/" && !(path8.startsWith("http://") || path8.startsWith("https://")) && method !== "CONNECT") {
+        } else if (path9[0] !== "/" && !(path9.startsWith("http://") || path9.startsWith("https://")) && method !== "CONNECT") {
           throw new InvalidArgumentError("path must be an absolute URL or start with a slash");
-        } else if (invalidPathRegex.exec(path8) !== null) {
+        } else if (invalidPathRegex.exec(path9) !== null) {
           throw new InvalidArgumentError("invalid request path");
         }
         if (typeof method !== "string") {
@@ -5752,7 +5752,7 @@ var require_request = __commonJS({
         this.completed = false;
         this.aborted = false;
         this.upgrade = upgrade || null;
-        this.path = query ? util.buildURL(path8, query) : path8;
+        this.path = query ? util.buildURL(path9, query) : path9;
         this.origin = origin;
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" : idempotent;
         this.blocking = blocking == null ? false : blocking;
@@ -6760,9 +6760,9 @@ var require_RedirectHandler = __commonJS({
           return this.handler.onHeaders(statusCode, headers, resume, statusText);
         }
         const { origin, pathname, search } = util.parseURL(new URL(this.location, this.opts.origin && new URL(this.opts.path, this.opts.origin)));
-        const path8 = search ? `${pathname}${search}` : pathname;
+        const path9 = search ? `${pathname}${search}` : pathname;
         this.opts.headers = cleanRequestHeaders(this.opts.headers, statusCode === 303, this.opts.origin !== origin);
-        this.opts.path = path8;
+        this.opts.path = path9;
         this.opts.origin = origin;
         this.opts.maxRedirections = 0;
         this.opts.query = null;
@@ -8002,7 +8002,7 @@ var require_client = __commonJS({
         writeH2(client, client[kHTTP2Session], request);
         return;
       }
-      const { body, method, path: path8, host, upgrade, headers, blocking, reset } = request;
+      const { body, method, path: path9, host, upgrade, headers, blocking, reset } = request;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
         body.read(0);
@@ -8052,7 +8052,7 @@ var require_client = __commonJS({
       if (blocking) {
         socket[kBlocking] = true;
       }
-      let header = `${method} ${path8} HTTP/1.1\r
+      let header = `${method} ${path9} HTTP/1.1\r
 `;
       if (typeof host === "string") {
         header += `host: ${host}\r
@@ -8115,7 +8115,7 @@ upgrade: ${upgrade}\r
       return true;
     }
     function writeH2(client, session, request) {
-      const { body, method, path: path8, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
+      const { body, method, path: path9, host, upgrade, expectContinue, signal, headers: reqHeaders } = request;
       let headers;
       if (typeof reqHeaders === "string") headers = Request[kHTTP2CopyHeaders](reqHeaders.trim());
       else headers = reqHeaders;
@@ -8158,7 +8158,7 @@ upgrade: ${upgrade}\r
         });
         return true;
       }
-      headers[HTTP2_HEADER_PATH] = path8;
+      headers[HTTP2_HEADER_PATH] = path9;
       headers[HTTP2_HEADER_SCHEME] = "https";
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH";
       if (body && typeof body.read === "function") {
@@ -10398,20 +10398,20 @@ var require_mock_utils = __commonJS({
       }
       return true;
     }
-    function safeUrl(path8) {
-      if (typeof path8 !== "string") {
-        return path8;
+    function safeUrl(path9) {
+      if (typeof path9 !== "string") {
+        return path9;
       }
-      const pathSegments = path8.split("?");
+      const pathSegments = path9.split("?");
       if (pathSegments.length !== 2) {
-        return path8;
+        return path9;
       }
       const qp = new URLSearchParams(pathSegments.pop());
       qp.sort();
       return [...pathSegments, qp.toString()].join("?");
     }
-    function matchKey(mockDispatch2, { path: path8, method, body, headers }) {
-      const pathMatch = matchValue(mockDispatch2.path, path8);
+    function matchKey(mockDispatch2, { path: path9, method, body, headers }) {
+      const pathMatch = matchValue(mockDispatch2.path, path9);
       const methodMatch = matchValue(mockDispatch2.method, method);
       const bodyMatch = typeof mockDispatch2.body !== "undefined" ? matchValue(mockDispatch2.body, body) : true;
       const headersMatch = matchHeaders(mockDispatch2, headers);
@@ -10429,7 +10429,7 @@ var require_mock_utils = __commonJS({
     function getMockDispatch(mockDispatches, key) {
       const basePath = key.query ? buildURL(key.path, key.query) : key.path;
       const resolvedPath = typeof basePath === "string" ? safeUrl(basePath) : basePath;
-      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path8 }) => matchValue(safeUrl(path8), resolvedPath));
+      let matchedMockDispatches = mockDispatches.filter(({ consumed }) => !consumed).filter(({ path: path9 }) => matchValue(safeUrl(path9), resolvedPath));
       if (matchedMockDispatches.length === 0) {
         throw new MockNotMatchedError(`Mock dispatch not matched for path '${resolvedPath}'`);
       }
@@ -10466,9 +10466,9 @@ var require_mock_utils = __commonJS({
       }
     }
     function buildKey(opts) {
-      const { path: path8, method, body, headers, query } = opts;
+      const { path: path9, method, body, headers, query } = opts;
       return {
-        path: path8,
+        path: path9,
         method,
         body,
         headers,
@@ -10917,10 +10917,10 @@ var require_pending_interceptors_formatter = __commonJS({
       }
       format(pendingInterceptors) {
         const withPrettyHeaders = pendingInterceptors.map(
-          ({ method, path: path8, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
+          ({ method, path: path9, data: { statusCode }, persist, times, timesInvoked, origin }) => ({
             Method: method,
             Origin: origin,
-            Path: path8,
+            Path: path9,
             "Status code": statusCode,
             Persistent: persist ? "\u2705" : "\u274C",
             Invocations: timesInvoked,
@@ -15540,8 +15540,8 @@ var require_util6 = __commonJS({
         }
       }
     }
-    function validateCookiePath(path8) {
-      for (const char of path8) {
+    function validateCookiePath(path9) {
+      for (const char of path9) {
         const code = char.charCodeAt(0);
         if (code < 33 || char === ";") {
           throw new Error("Invalid cookie path");
@@ -17221,11 +17221,11 @@ var require_undici = __commonJS({
           if (typeof opts.path !== "string") {
             throw new InvalidArgumentError("invalid opts.path");
           }
-          let path8 = opts.path;
+          let path9 = opts.path;
           if (!opts.path.startsWith("/")) {
-            path8 = `/${path8}`;
+            path9 = `/${path9}`;
           }
-          url = new URL(util.parseOrigin(url).origin + path8);
+          url = new URL(util.parseOrigin(url).origin + path9);
         } else {
           if (!opts) {
             opts = typeof url === "object" ? url : {};
@@ -18448,7 +18448,7 @@ var require_path_utils = __commonJS({
     };
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toPlatformPath = exports2.toWin32Path = exports2.toPosixPath = void 0;
-    var path8 = __importStar(require("path"));
+    var path9 = __importStar(require("path"));
     function toPosixPath(pth) {
       return pth.replace(/[\\]/g, "/");
     }
@@ -18458,7 +18458,7 @@ var require_path_utils = __commonJS({
     }
     exports2.toWin32Path = toWin32Path;
     function toPlatformPath(pth) {
-      return pth.replace(/[/\\]/g, path8.sep);
+      return pth.replace(/[/\\]/g, path9.sep);
     }
     exports2.toPlatformPath = toPlatformPath;
   }
@@ -18521,12 +18521,12 @@ var require_io_util = __commonJS({
     var _a;
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCmdPath = exports2.tryGetExecutablePath = exports2.isRooted = exports2.isDirectory = exports2.exists = exports2.READONLY = exports2.UV_FS_O_EXLOCK = exports2.IS_WINDOWS = exports2.unlink = exports2.symlink = exports2.stat = exports2.rmdir = exports2.rm = exports2.rename = exports2.readlink = exports2.readdir = exports2.open = exports2.mkdir = exports2.lstat = exports2.copyFile = exports2.chmod = void 0;
-    var fs8 = __importStar(require("fs"));
-    var path8 = __importStar(require("path"));
-    _a = fs8.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
+    var fs9 = __importStar(require("fs"));
+    var path9 = __importStar(require("path"));
+    _a = fs9.promises, exports2.chmod = _a.chmod, exports2.copyFile = _a.copyFile, exports2.lstat = _a.lstat, exports2.mkdir = _a.mkdir, exports2.open = _a.open, exports2.readdir = _a.readdir, exports2.readlink = _a.readlink, exports2.rename = _a.rename, exports2.rm = _a.rm, exports2.rmdir = _a.rmdir, exports2.stat = _a.stat, exports2.symlink = _a.symlink, exports2.unlink = _a.unlink;
     exports2.IS_WINDOWS = process.platform === "win32";
     exports2.UV_FS_O_EXLOCK = 268435456;
-    exports2.READONLY = fs8.constants.O_RDONLY;
+    exports2.READONLY = fs9.constants.O_RDONLY;
     function exists(fsPath) {
       return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -18571,7 +18571,7 @@ var require_io_util = __commonJS({
         }
         if (stats && stats.isFile()) {
           if (exports2.IS_WINDOWS) {
-            const upperExt = path8.extname(filePath).toUpperCase();
+            const upperExt = path9.extname(filePath).toUpperCase();
             if (extensions.some((validExt) => validExt.toUpperCase() === upperExt)) {
               return filePath;
             }
@@ -18595,11 +18595,11 @@ var require_io_util = __commonJS({
           if (stats && stats.isFile()) {
             if (exports2.IS_WINDOWS) {
               try {
-                const directory = path8.dirname(filePath);
-                const upperName = path8.basename(filePath).toUpperCase();
+                const directory = path9.dirname(filePath);
+                const upperName = path9.basename(filePath).toUpperCase();
                 for (const actualName of yield exports2.readdir(directory)) {
                   if (upperName === actualName.toUpperCase()) {
-                    filePath = path8.join(directory, actualName);
+                    filePath = path9.join(directory, actualName);
                     break;
                   }
                 }
@@ -18694,7 +18694,7 @@ var require_io = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.findInPath = exports2.which = exports2.mkdirP = exports2.rmRF = exports2.mv = exports2.cp = void 0;
     var assert_1 = require("assert");
-    var path8 = __importStar(require("path"));
+    var path9 = __importStar(require("path"));
     var ioUtil = __importStar(require_io_util());
     function cp(source, dest, options = {}) {
       return __awaiter(this, void 0, void 0, function* () {
@@ -18703,7 +18703,7 @@ var require_io = __commonJS({
         if (destStat && destStat.isFile() && !force) {
           return;
         }
-        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path8.join(dest, path8.basename(source)) : dest;
+        const newDest = destStat && destStat.isDirectory() && copySourceDirectory ? path9.join(dest, path9.basename(source)) : dest;
         if (!(yield ioUtil.exists(source))) {
           throw new Error(`no such file or directory: ${source}`);
         }
@@ -18715,7 +18715,7 @@ var require_io = __commonJS({
             yield cpDirRecursive(source, newDest, 0, force);
           }
         } else {
-          if (path8.relative(source, newDest) === "") {
+          if (path9.relative(source, newDest) === "") {
             throw new Error(`'${newDest}' and '${source}' are the same file`);
           }
           yield copyFile(source, newDest, force);
@@ -18728,7 +18728,7 @@ var require_io = __commonJS({
         if (yield ioUtil.exists(dest)) {
           let destExists = true;
           if (yield ioUtil.isDirectory(dest)) {
-            dest = path8.join(dest, path8.basename(source));
+            dest = path9.join(dest, path9.basename(source));
             destExists = yield ioUtil.exists(dest);
           }
           if (destExists) {
@@ -18739,7 +18739,7 @@ var require_io = __commonJS({
             }
           }
         }
-        yield mkdirP(path8.dirname(dest));
+        yield mkdirP(path9.dirname(dest));
         yield ioUtil.rename(source, dest);
       });
     }
@@ -18802,7 +18802,7 @@ var require_io = __commonJS({
         }
         const extensions = [];
         if (ioUtil.IS_WINDOWS && process.env["PATHEXT"]) {
-          for (const extension of process.env["PATHEXT"].split(path8.delimiter)) {
+          for (const extension of process.env["PATHEXT"].split(path9.delimiter)) {
             if (extension) {
               extensions.push(extension);
             }
@@ -18815,12 +18815,12 @@ var require_io = __commonJS({
           }
           return [];
         }
-        if (tool.includes(path8.sep)) {
+        if (tool.includes(path9.sep)) {
           return [];
         }
         const directories = [];
         if (process.env.PATH) {
-          for (const p of process.env.PATH.split(path8.delimiter)) {
+          for (const p of process.env.PATH.split(path9.delimiter)) {
             if (p) {
               directories.push(p);
             }
@@ -18828,7 +18828,7 @@ var require_io = __commonJS({
         }
         const matches = [];
         for (const directory of directories) {
-          const filePath = yield ioUtil.tryGetExecutablePath(path8.join(directory, tool), extensions);
+          const filePath = yield ioUtil.tryGetExecutablePath(path9.join(directory, tool), extensions);
           if (filePath) {
             matches.push(filePath);
           }
@@ -18944,7 +18944,7 @@ var require_toolrunner = __commonJS({
     var os = __importStar(require("os"));
     var events = __importStar(require("events"));
     var child = __importStar(require("child_process"));
-    var path8 = __importStar(require("path"));
+    var path9 = __importStar(require("path"));
     var io = __importStar(require_io());
     var ioUtil = __importStar(require_io_util());
     var timers_1 = require("timers");
@@ -19159,7 +19159,7 @@ var require_toolrunner = __commonJS({
       exec() {
         return __awaiter(this, void 0, void 0, function* () {
           if (!ioUtil.isRooted(this.toolPath) && (this.toolPath.includes("/") || IS_WINDOWS && this.toolPath.includes("\\"))) {
-            this.toolPath = path8.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
+            this.toolPath = path9.resolve(process.cwd(), this.options.cwd || process.cwd(), this.toolPath);
           }
           this.toolPath = yield io.which(this.toolPath, true);
           return new Promise((resolve2, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -19659,7 +19659,7 @@ var require_core = __commonJS({
     var file_command_1 = require_file_command();
     var utils_1 = require_utils();
     var os = __importStar(require("os"));
-    var path8 = __importStar(require("path"));
+    var path9 = __importStar(require("path"));
     var oidc_utils_1 = require_oidc_utils();
     var ExitCode;
     (function(ExitCode2) {
@@ -19687,7 +19687,7 @@ var require_core = __commonJS({
       } else {
         (0, command_1.issueCommand)("add-path", {}, inputPath);
       }
-      process.env["PATH"] = `${inputPath}${path8.delimiter}${process.env["PATH"]}`;
+      process.env["PATH"] = `${inputPath}${path9.delimiter}${process.env["PATH"]}`;
     }
     exports2.addPath = addPath;
     function getInput2(name, options) {
@@ -19831,6 +19831,15 @@ function configureGit(cfg) {
   run("git", ["config", "user.name", "Kindling Forge"], cfg.workdir);
   run("git", ["config", "user.email", "forge@kindling.app"], cfg.workdir);
   run("git", ["remote", "set-url", "origin", remote], cfg.workdir);
+  excludeRunnerFiles(cfg.workdir);
+}
+function excludeRunnerFiles(workdir) {
+  const file = path.join(workdir, ".git", "info", "exclude");
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const have = fs.existsSync(file) ? fs.readFileSync(file, "utf-8") : "";
+  const missing = RUNNER_FILES.filter((f) => !have.split("\n").includes(f));
+  if (missing.length) fs.appendFileSync(file, `${have && !have.endsWith("\n") ? "\n" : ""}${missing.join("\n")}
+`);
 }
 function createBranch(workdir, branchName) {
   run("git", ["checkout", "-b", branchName], workdir);
@@ -19899,12 +19908,16 @@ function runCapture(cmd, args, cwd) {
   }
   return result.stdout ?? "";
 }
-var import_child_process, core;
+var import_child_process, fs, path, core, RUNNER_FILES, DIFF_EXCLUDES;
 var init_git = __esm({
   "src/git.ts"() {
     "use strict";
     import_child_process = require("child_process");
+    fs = __toESM(require("fs"));
+    path = __toESM(require("path"));
     core = __toESM(require_core());
+    RUNNER_FILES = [".kindling/forge-prompt.md"];
+    DIFF_EXCLUDES = RUNNER_FILES.map((f) => `:(exclude)${f}`);
   }
 });
 
@@ -20135,13 +20148,13 @@ function handleStreamEvent(evt, onEvent, usage, defaultModel) {
     default:
   }
 }
-var import_child_process2, fs, path, ClaudeCodeAdapter;
+var import_child_process2, fs2, path2, ClaudeCodeAdapter;
 var init_claude_code = __esm({
   "src/adapters/claude-code.ts"() {
     "use strict";
     import_child_process2 = require("child_process");
-    fs = __toESM(require("fs"));
-    path = __toESM(require("path"));
+    fs2 = __toESM(require("fs"));
+    path2 = __toESM(require("path"));
     init_spec();
     init_git();
     ClaudeCodeAdapter = {
@@ -20152,9 +20165,9 @@ var init_claude_code = __esm({
           stdio: "pipe",
           env: { ...process.env, ANTHROPIC_API_KEY: llm.apiKey }
         });
-        const promptPath = path.join(workdir, ".kindling", "forge-prompt.md");
-        fs.mkdirSync(path.dirname(promptPath), { recursive: true });
-        fs.writeFileSync(promptPath, renderSpecPrompt(spec, { protectedPaths, testCommand, variant: "task", previousFailure, inFlight }));
+        const promptPath = path2.join(workdir, ".kindling", "forge-prompt.md");
+        fs2.mkdirSync(path2.dirname(promptPath), { recursive: true });
+        fs2.writeFileSync(promptPath, renderSpecPrompt(spec, { protectedPaths, testCommand, variant: "task", previousFailure, inFlight }));
         await onEvent({ kind: "agent.setup", adapter: "claude-code", step: "prompt_written" });
         const args = [
           "--print",
@@ -20184,7 +20197,7 @@ var init_claude_code = __esm({
             env,
             stdio: ["pipe", "pipe", "pipe"]
           });
-          proc.stdin.end(fs.readFileSync(promptPath, "utf-8"));
+          proc.stdin.end(fs2.readFileSync(promptPath, "utf-8"));
           let buffer = "";
           proc.stdout.on("data", (chunk) => {
             buffer += chunk.toString();
@@ -20269,13 +20282,13 @@ function handleCodexEvent(evt, onEvent, usage) {
     default:
   }
 }
-var import_child_process3, fs2, path2, CodexAdapter;
+var import_child_process3, fs3, path3, CodexAdapter;
 var init_codex = __esm({
   "src/adapters/codex.ts"() {
     "use strict";
     import_child_process3 = require("child_process");
-    fs2 = __toESM(require("fs"));
-    path2 = __toESM(require("path"));
+    fs3 = __toESM(require("fs"));
+    path3 = __toESM(require("path"));
     init_spec();
     init_git();
     CodexAdapter = {
@@ -20286,10 +20299,10 @@ var init_codex = __esm({
           stdio: "pipe",
           env: { ...process.env, OPENAI_API_KEY: llm.apiKey }
         });
-        const promptPath = path2.join(workdir, ".kindling", "forge-prompt.md");
-        fs2.mkdirSync(path2.dirname(promptPath), { recursive: true });
+        const promptPath = path3.join(workdir, ".kindling", "forge-prompt.md");
+        fs3.mkdirSync(path3.dirname(promptPath), { recursive: true });
         const promptText = renderSpecPrompt(spec, { protectedPaths, testCommand, variant: "task", previousFailure, inFlight });
-        fs2.writeFileSync(promptPath, promptText);
+        fs3.writeFileSync(promptPath, promptText);
         await onEvent({ kind: "agent.setup", adapter: "codex", step: "prompt_written" });
         const args = [
           "--json",
@@ -20389,13 +20402,13 @@ function handleGeminiEvent(evt, onEvent, usage) {
     default:
   }
 }
-var import_child_process4, fs3, path3, GeminiCliAdapter;
+var import_child_process4, fs4, path4, GeminiCliAdapter;
 var init_gemini_cli = __esm({
   "src/adapters/gemini-cli.ts"() {
     "use strict";
     import_child_process4 = require("child_process");
-    fs3 = __toESM(require("fs"));
-    path3 = __toESM(require("path"));
+    fs4 = __toESM(require("fs"));
+    path4 = __toESM(require("path"));
     init_spec();
     init_git();
     GeminiCliAdapter = {
@@ -20406,10 +20419,10 @@ var init_gemini_cli = __esm({
           stdio: "pipe",
           env: { ...process.env, GEMINI_API_KEY: llm.apiKey }
         });
-        const promptPath = path3.join(workdir, ".kindling", "forge-prompt.md");
-        fs3.mkdirSync(path3.dirname(promptPath), { recursive: true });
+        const promptPath = path4.join(workdir, ".kindling", "forge-prompt.md");
+        fs4.mkdirSync(path4.dirname(promptPath), { recursive: true });
         const promptText = renderSpecPrompt(spec, { protectedPaths, testCommand, variant: "task", previousFailure, inFlight });
-        fs3.writeFileSync(promptPath, promptText);
+        fs4.writeFileSync(promptPath, promptText);
         await onEvent({ kind: "agent.setup", adapter: "gemini-cli", step: "prompt_written" });
         const args = [
           "--yolo",
@@ -20492,7 +20505,7 @@ __export(scout_exports, {
 });
 function checkOutdatedDeps(workdir) {
   const findings = [];
-  if (fs4.existsSync(path4.join(workdir, "package.json"))) {
+  if (fs5.existsSync(path5.join(workdir, "package.json"))) {
     const res = (0, import_child_process5.spawnSync)("npm", ["outdated", "--json"], {
       cwd: workdir,
       encoding: "utf-8",
@@ -20518,7 +20531,7 @@ function checkOutdatedDeps(workdir) {
     } catch {
     }
   }
-  if (fs4.existsSync(path4.join(workdir, "go.mod"))) {
+  if (fs5.existsSync(path5.join(workdir, "go.mod"))) {
     const res = (0, import_child_process5.spawnSync)("go", ["list", "-m", "-u", "-json", "all"], {
       cwd: workdir,
       encoding: "utf-8",
@@ -20584,10 +20597,10 @@ function scanHotFiles(workdir) {
   const files = res.stdout.trim().split("\n").filter(Boolean);
   const largeWithoutTests = files.filter((f) => {
     try {
-      const size = fs4.statSync(f).size;
+      const size = fs5.statSync(f).size;
       if (size < 5e3) return false;
       const testFile = f.replace(/\.ts$/, ".test.ts").replace(/\/src\//, "/tests/");
-      return !fs4.existsSync(testFile);
+      return !fs5.existsSync(testFile);
     } catch {
       return false;
     }
@@ -20613,7 +20626,7 @@ async function llmCodeSmellScan(workdir, llm, onEvent) {
   if (files.length === 0) return [];
   const samples = files.map((f) => {
     try {
-      const content = fs4.readFileSync(f, "utf-8").split("\n").slice(0, 100).join("\n");
+      const content = fs5.readFileSync(f, "utf-8").split("\n").slice(0, 100).join("\n");
       return `## ${f.replace(workdir + "/", "")}
 \`\`\`typescript
 ${content}
@@ -20665,13 +20678,13 @@ function getBaseUrl(provider) {
       return "https://api.openai.com/v1";
   }
 }
-var import_child_process5, fs4, path4, ScoutAdapter;
+var import_child_process5, fs5, path5, ScoutAdapter;
 var init_scout = __esm({
   "src/adapters/scout.ts"() {
     "use strict";
     import_child_process5 = require("child_process");
-    fs4 = __toESM(require("fs"));
-    path4 = __toESM(require("path"));
+    fs5 = __toESM(require("fs"));
+    path5 = __toESM(require("path"));
     ScoutAdapter = {
       async run(ctx) {
         const { workdir, llm, onEvent } = ctx;
@@ -20772,15 +20785,17 @@ var init_llm = __esm({
 // src/adapters/reviewer.ts
 var reviewer_exports = {};
 __export(reviewer_exports, {
+  MAX_REVIEW_DIFF_CHARS: () => MAX_REVIEW_DIFF_CHARS,
   ReviewerAdapter: () => ReviewerAdapter
 });
-var import_child_process6, REVIEW_PROMPT, ReviewerAdapter;
+var import_child_process6, REVIEW_PROMPT, MAX_REVIEW_DIFF_CHARS, ReviewerAdapter;
 var init_reviewer = __esm({
   "src/adapters/reviewer.ts"() {
     "use strict";
     import_child_process6 = require("child_process");
     init_types();
     init_llm();
+    init_git();
     REVIEW_PROMPT = `You are a code reviewer specializing in AI-generated code quality.
 Review the following diff and evaluate it against the acceptance criteria.
 
@@ -20809,16 +20824,19 @@ Respond with ONLY valid JSON:
     { "file": "...", "line": 0, "comment": "..." }
   ]
 }`;
+    MAX_REVIEW_DIFF_CHARS = 4e4;
     ReviewerAdapter = {
       async run(ctx) {
         const { workdir, spec, llm, onEvent } = ctx;
         await onEvent({ kind: "reviewer.starting", spec_title: spec.request_title });
-        const diffResult = (0, import_child_process6.spawnSync)("git", ["diff", "HEAD~1", "HEAD"], {
+        const range = ctx.baseBranch ? [`origin/${ctx.baseBranch}...HEAD`] : ["HEAD~1", "HEAD"];
+        const diffResult = (0, import_child_process6.spawnSync)("git", ["diff", ...range, "--", ".", ...DIFF_EXCLUDES], {
           cwd: workdir,
           encoding: "utf-8",
-          timeout: 3e4
+          timeout: 3e4,
+          maxBuffer: 2e7
         });
-        const diff = (diffResult.stdout ?? "").slice(0, 8e3);
+        const diff = (diffResult.stdout ?? "").slice(0, MAX_REVIEW_DIFF_CHARS);
         if (!diff.trim()) {
           await onEvent({ kind: "reviewer.no_diff" });
           return { success: true, testsPassed: false, filesChanged: [], errorMessage: "No diff found to review" };
@@ -21199,7 +21217,7 @@ var require_minimatch = __commonJS({
   "../../node_modules/minimatch/minimatch.js"(exports2, module2) {
     module2.exports = minimatch3;
     minimatch3.Minimatch = Minimatch;
-    var path8 = (function() {
+    var path9 = (function() {
       try {
         return require("path");
       } catch (e) {
@@ -21207,7 +21225,7 @@ var require_minimatch = __commonJS({
     })() || {
       sep: "/"
     };
-    minimatch3.sep = path8.sep;
+    minimatch3.sep = path9.sep;
     var GLOBSTAR = minimatch3.GLOBSTAR = Minimatch.GLOBSTAR = {};
     var expand = require_brace_expansion();
     var plTypes = {
@@ -21296,8 +21314,8 @@ var require_minimatch = __commonJS({
       assertValidPattern(pattern);
       if (!options) options = {};
       pattern = pattern.trim();
-      if (!options.allowWindowsEscape && path8.sep !== "/") {
-        pattern = pattern.split(path8.sep).join("/");
+      if (!options.allowWindowsEscape && path9.sep !== "/") {
+        pattern = pattern.split(path9.sep).join("/");
       }
       this.options = options;
       this.maxGlobstarRecursion = options.maxGlobstarRecursion !== void 0 ? options.maxGlobstarRecursion : 200;
@@ -21668,8 +21686,8 @@ var require_minimatch = __commonJS({
       if (this.empty) return f === "";
       if (f === "/" && partial) return true;
       var options = this.options;
-      if (path8.sep !== "/") {
-        f = f.split(path8.sep).join("/");
+      if (path9.sep !== "/") {
+        f = f.split(path9.sep).join("/");
       }
       f = f.split(slashSplit);
       this.debug(this.pattern, "split", f);
@@ -22003,7 +22021,7 @@ async function executeTool(name, args, ctx) {
   const workdir = ctx.workdir;
   switch (name) {
     case "list_files": {
-      const dir = path5.resolve(workdir, args.dir ?? ".");
+      const dir = path6.resolve(workdir, args.dir ?? ".");
       if (!dir.startsWith(workdir)) return "ERROR: Path outside repo";
       const recursive = args.recursive ?? false;
       const files = listFiles(dir, recursive, workdir);
@@ -22013,14 +22031,14 @@ async function executeTool(name, args, ctx) {
       const filePath = resolveAndGuard(workdir, args.path, ctx.protectedPaths);
       if (filePath.error) return filePath.error;
       try {
-        const content = fs5.readFileSync(filePath.resolved, "utf-8");
+        const content = fs6.readFileSync(filePath.resolved, "utf-8");
         return content.slice(0, 5e4);
       } catch (e) {
         return `ERROR: ${e}`;
       }
     }
     case "grep": {
-      const dir = args.dir ? path5.resolve(workdir, args.dir) : workdir;
+      const dir = args.dir ? path6.resolve(workdir, args.dir) : workdir;
       if (!dir.startsWith(workdir)) return "ERROR: Path outside repo";
       const pattern = args.pattern;
       const include = args.include;
@@ -22034,16 +22052,16 @@ async function executeTool(name, args, ctx) {
     case "write_file": {
       const filePath = resolveAndGuard(workdir, args.path, ctx.protectedPaths);
       if (filePath.error) return filePath.error;
-      fs5.mkdirSync(path5.dirname(filePath.resolved), { recursive: true });
-      fs5.writeFileSync(filePath.resolved, args.content, "utf-8");
+      fs6.mkdirSync(path6.dirname(filePath.resolved), { recursive: true });
+      fs6.writeFileSync(filePath.resolved, args.content, "utf-8");
       ctx.onEvent({ kind: "files_changed", path: args.path });
       return `Written: ${args.path}`;
     }
     case "apply_patch": {
       const tmpFile = `/tmp/forge_patch_${Date.now()}.diff`;
-      fs5.writeFileSync(tmpFile, args.patch, "utf-8");
+      fs6.writeFileSync(tmpFile, args.patch, "utf-8");
       const result = (0, import_child_process7.spawnSync)("git", ["apply", "--index", tmpFile], { cwd: workdir, encoding: "utf-8" });
-      fs5.unlinkSync(tmpFile);
+      fs6.unlinkSync(tmpFile);
       if (result.status !== 0) return `ERROR applying patch: ${result.stderr}`;
       ctx.onEvent({ kind: "patch_applied" });
       return "Patch applied successfully";
@@ -22115,11 +22133,11 @@ async function callLlm(llm, messages, tools) {
   return res.json();
 }
 function resolveAndGuard(workdir, filePath, protectedPaths) {
-  const resolved = path5.resolve(workdir, filePath);
+  const resolved = path6.resolve(workdir, filePath);
   if (!resolved.startsWith(workdir)) {
     return { error: "ERROR: Path traversal detected \u2014 outside repo" };
   }
-  const rel = path5.relative(workdir, resolved);
+  const rel = path6.relative(workdir, resolved);
   for (const pattern of protectedPaths) {
     if ((0, import_minimatch.default)(rel, pattern, { matchBase: true })) {
       return { error: `ERROR: Path ${rel} is protected by policy` };
@@ -22136,14 +22154,14 @@ function listFiles(dir, recursive, workdir, maxDepth = 5) {
     if (depth > maxDepth) return;
     let entries;
     try {
-      entries = fs5.readdirSync(d, { withFileTypes: true });
+      entries = fs6.readdirSync(d, { withFileTypes: true });
     } catch {
       return;
     }
     for (const e of entries) {
       if (e.name.startsWith(".") || e.name === "node_modules" || e.name === "__pycache__" || e.name === ".git") continue;
-      const full = path5.join(d, e.name);
-      const rel = path5.relative(workdir, full);
+      const full = path6.join(d, e.name);
+      const rel = path6.relative(workdir, full);
       if (e.isDirectory()) {
         if (recursive) walk(full, depth + 1);
         else results.push(`${rel}/`);
@@ -22166,12 +22184,12 @@ function getChangedFiles2(workdir) {
   ]);
   return [...all].filter(Boolean);
 }
-var fs5, path5, import_child_process7, import_minimatch, TOOLS, ALLOWED_COMMAND_PREFIXES, FORBIDDEN_COMMANDS, NativeAdapter;
+var fs6, path6, import_child_process7, import_minimatch, TOOLS, ALLOWED_COMMAND_PREFIXES, FORBIDDEN_COMMANDS, NativeAdapter;
 var init_native = __esm({
   "src/adapters/native.ts"() {
     "use strict";
-    fs5 = __toESM(require("fs"));
-    path5 = __toESM(require("path"));
+    fs6 = __toESM(require("fs"));
+    path6 = __toESM(require("path"));
     import_child_process7 = require("child_process");
     import_minimatch = __toESM(require_minimatch());
     init_spec();
@@ -22585,7 +22603,7 @@ function runMapped(m, workdir, testCommand) {
   let cmd = null;
   if (m.method === "command" && m.command) cmd = m.command;
   else if (m.method === "test") {
-    if (m.test_file && !fs6.existsSync(path6.join(workdir, m.test_file))) {
+    if (m.test_file && !fs7.existsSync(path7.join(workdir, m.test_file))) {
       return { passed: false, evidence: `Mapped test file ${m.test_file} does not exist.` };
     }
     cmd = testFilter(testCommand, m.test_file, m.test_name, workdir);
@@ -22600,11 +22618,11 @@ ${res.stderr ?? ""}`;
 }
 function testFilter(testCommand, file, name, workdir) {
   const base = testCommand ?? "npm test";
-  const hasPkg = workdir ? fs6.existsSync(path6.join(workdir, "package.json")) : false;
+  const hasPkg = workdir ? fs7.existsSync(path7.join(workdir, "package.json")) : false;
   if (hasPkg) {
     let runner = null;
     try {
-      const pkg = JSON.parse(fs6.readFileSync(path6.join(workdir, "package.json"), "utf-8"));
+      const pkg = JSON.parse(fs7.readFileSync(path7.join(workdir, "package.json"), "utf-8"));
       const deps = { ...pkg.dependencies ?? {}, ...pkg.devDependencies ?? {} };
       runner = deps.vitest ? "vitest" : deps.jest ? "jest" : null;
     } catch {
@@ -22649,13 +22667,13 @@ async function judgeWithLlm(criteria, opts, usage) {
     return fallback;
   }
 }
-var import_child_process9, fs6, path6, JUDGE_PROMPT, DEFAULT_ANTHROPIC_JUDGE_MODEL;
+var import_child_process9, fs7, path7, JUDGE_PROMPT, DEFAULT_ANTHROPIC_JUDGE_MODEL;
 var init_judge = __esm({
   "src/quality/judge.ts"() {
     "use strict";
     import_child_process9 = require("child_process");
-    fs6 = __toESM(require("fs"));
-    path6 = __toESM(require("path"));
+    fs7 = __toESM(require("fs"));
+    path7 = __toESM(require("path"));
     init_types();
     init_llm();
     init_spec();
@@ -22686,8 +22704,8 @@ Respond with ONLY valid JSON:
 
 // src/main.ts
 var core2 = __toESM(require_core());
-var fs7 = __toESM(require("fs"));
-var path7 = __toESM(require("path"));
+var fs8 = __toESM(require("fs"));
+var path8 = __toESM(require("path"));
 var import_child_process10 = require("child_process");
 
 // src/report.ts
@@ -22849,8 +22867,8 @@ async function run2() {
     return;
   }
   const setupRel = ".kindling/setup.sh";
-  const setupFile = path7.join(workdir, setupRel);
-  if (fs7.existsSync(setupFile)) {
+  const setupFile = path8.join(workdir, setupRel);
+  if (fs8.existsSync(setupFile)) {
     core2.info(`[Forge] Running ${setupRel}`);
     const result = (0, import_child_process10.spawnSync)("bash", [setupFile], { cwd: workdir, stdio: "inherit", encoding: "utf-8" });
     reporter.push("setup_run", { script: setupRel, exitCode: result.status ?? -1 });
@@ -22889,7 +22907,9 @@ async function run2() {
   let previousFailure;
   let lastCriteria;
   const totalUsage = {};
+  let iterationsRun = 0;
   for (let i = 0; i < maxIterations; i++) {
+    iterationsRun = i + 1;
     reporter.push("iteration_start", { iteration: i + 1 });
     core2.info(`[Forge] Starting iteration ${i + 1}/${maxIterations}`);
     const result = await adapter.run({
@@ -22963,7 +22983,7 @@ async function run2() {
       status: "needs_human",
       branchName,
       headSha,
-      iterations: maxIterations,
+      iterations: iterationsRun,
       testsPassed: false,
       filesChanged: [],
       errorMessage: "Agent produced no file changes."
@@ -23021,7 +23041,7 @@ async function run2() {
   } catch (e) {
     reporter.push("error", { message: `Push failed: ${e}` });
     await reporter.destroy();
-    await sendComplete(session, { usage: totalUsage, status: "failed", branchName, headSha, iterations: maxIterations, testsPassed: false, filesChanged, errorMessage: String(e) });
+    await sendComplete(session, { usage: totalUsage, status: "failed", branchName, headSha, iterations: iterationsRun, testsPassed: false, filesChanged, errorMessage: String(e) });
     core2.setFailed(`[Forge] Push failed: ${e}`);
     return;
   }
@@ -23029,7 +23049,7 @@ async function run2() {
   const testsPassed = finalResult?.testsPassed ?? false;
   const prStatus = succeeded ? "succeeded" : "needs_human";
   const prTitle = `${succeeded ? "\u2705" : "\u{1F6A7}"} ${isBuildSpec(spec) && spec.pr?.title ? spec.pr.title : `Forge: ${spec.request_title ?? "Feature"}`}`;
-  const prBody = buildPrBody({ spec, branchName, headSha, testOutput: finalResult?.testOutput, iterations: maxIterations, adapter: adapterKey, model: config.model, kindlingUrl, requestId: spec.request_id, requestContext: claimData.request_context, rebaseConflicts, baseBranch });
+  const prBody = buildPrBody({ spec, branchName, headSha, testOutput: finalResult?.testOutput, iterations: iterationsRun, adapter: adapterKey, model: config.model, kindlingUrl, requestId: spec.request_id, requestContext: claimData.request_context, rebaseConflicts, baseBranch });
   const draft = (config.openAsDraft ?? false) || rebaseConflicts.length > 0;
   let prUrl;
   let prNumber;
@@ -23076,6 +23096,7 @@ async function run2() {
         protectedPaths,
         maxIterations: 1,
         turnBudget: 1,
+        baseBranch,
         mode: "build",
         llm: { provider: config.llmProvider, model: config.model, apiKey: llmKey, baseUrl: config.llmBaseUrl, reviewerModel: config.reviewerModel },
         onEvent: (e) => {
@@ -23111,7 +23132,7 @@ _Missing criteria: ${(reviewResult.missingCriteria ?? []).join(", ")}_` })
     prNumber,
     branchName,
     headSha,
-    iterations: maxIterations,
+    iterations: iterationsRun,
     testsPassed,
     filesChanged,
     errorMessage: succeeded ? void 0 : finalResult?.errorMessage,
@@ -23149,18 +23170,18 @@ function slugify(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40);
 }
 function detectTestCommand(workdir) {
-  if (fs7.existsSync(path7.join(workdir, "package.json"))) {
+  if (fs8.existsSync(path8.join(workdir, "package.json"))) {
     try {
-      const pkg = JSON.parse(fs7.readFileSync(path7.join(workdir, "package.json"), "utf-8"));
+      const pkg = JSON.parse(fs8.readFileSync(path8.join(workdir, "package.json"), "utf-8"));
       if (pkg?.scripts?.test && !String(pkg.scripts.test).includes("placeholder")) return "npm test";
       if (pkg?.scripts?.["test:ci"]) return "npm run test:ci";
     } catch {
     }
   }
-  if (fs7.existsSync(path7.join(workdir, "pyproject.toml")) || fs7.existsSync(path7.join(workdir, "pytest.ini"))) return "pytest";
-  if (fs7.existsSync(path7.join(workdir, "go.mod"))) return "go test ./...";
-  if (fs7.existsSync(path7.join(workdir, "Makefile"))) {
-    const mk = fs7.readFileSync(path7.join(workdir, "Makefile"), "utf-8");
+  if (fs8.existsSync(path8.join(workdir, "pyproject.toml")) || fs8.existsSync(path8.join(workdir, "pytest.ini"))) return "pytest";
+  if (fs8.existsSync(path8.join(workdir, "go.mod"))) return "go test ./...";
+  if (fs8.existsSync(path8.join(workdir, "Makefile"))) {
+    const mk = fs8.readFileSync(path8.join(workdir, "Makefile"), "utf-8");
     if (/^test:/m.test(mk)) return "make test";
   }
   return null;
