@@ -20796,6 +20796,7 @@ var init_reviewer = __esm({
     init_types();
     init_llm();
     init_git();
+    init_spec();
     REVIEW_PROMPT = `You are a code reviewer specializing in AI-generated code quality.
 Review the following diff and evaluate it against the acceptance criteria.
 
@@ -20841,7 +20842,7 @@ Respond with ONLY valid JSON:
           await onEvent({ kind: "reviewer.no_diff" });
           return { success: true, testsPassed: false, filesChanged: [], errorMessage: "No diff found to review" };
         }
-        const criteria = spec.acceptance_criteria.map((c, i) => `${i + 1}. ${c}`).join("\n");
+        const criteria = toSpecView(spec).criteria.map((c) => `${c.id}: ${c.text}`).join("\n");
         const prompt = REVIEW_PROMPT.replace("{criteria}", criteria).replace("{diff}", diff);
         let verdict = { verdict: "comment", score: 0.5, missing_criteria: [], general_feedback: "Review failed", inline_comments: [] };
         const usage = {};
