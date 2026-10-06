@@ -1,0 +1,23 @@
+name: 'Kindling Forge Runner'
+description: 'Runs an AI coding agent against a GitHub repo, driven by a Kindling PRD spec.'
+author: 'Kindling'
+
+branding:
+  icon: 'zap'
+  color: 'orange'
+
+inputs:
+  job_id:
+    description: 'Kindling agent_jobs.id to claim and execute.'
+    required: true
+  kindling_url:
+    description: 'Base URL of the Kindling deployment (e.g. https://your-app.vercel.app).'
+    required: true
+  mode:
+    description: 'Execution mode: build | scope | audit'
+    required: false
+    default: 'build'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
