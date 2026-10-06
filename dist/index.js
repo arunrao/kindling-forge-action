@@ -22789,14 +22789,22 @@ var EventReporter = class {
 init_git();
 init_types();
 init_spec();
+
+// src/base-url.ts
+function normalizeKindlingUrl(raw) {
+  const v = raw.trim();
+  return (/^https?:\/\//i.test(v) ? v : `https://${v}`).replace(/\/+$/, "");
+}
+
+// src/main.ts
 async function run2() {
   const jobId = core2.getInput("job_id", { required: true });
-  const kindlingUrl = core2.getInput("kindling_url", { required: true }).replace(/\/$/, "");
+  const kindlingUrl = normalizeKindlingUrl(core2.getInput("kindling_url", { required: true }));
   const mode = core2.getInput("mode") || "build";
   core2.info(`[Forge] Starting job ${jobId} in mode=${mode}`);
   let oidcToken;
   try {
-    oidcToken = await core2.getIDToken("kindling-forge");
+    oidcToken = await core2.getIDToken(kindlingUrl);
   } catch (e) {
     core2.setFailed(`[Forge] Failed to get OIDC token: ${e}`);
     return;
