@@ -20798,10 +20798,61 @@ var init_llm = __esm({
 // src/adapters/reviewer.ts
 var reviewer_exports = {};
 __export(reviewer_exports, {
+  MAX_BASE_FILES: () => MAX_BASE_FILES,
+  MAX_BASE_MANIFEST_CHARS: () => MAX_BASE_MANIFEST_CHARS,
   MAX_REVIEW_DIFF_CHARS: () => MAX_REVIEW_DIFF_CHARS,
-  ReviewerAdapter: () => ReviewerAdapter
+  ReviewerAdapter: () => ReviewerAdapter,
+  notesOf: () => notesOf,
+  readBaseContext: () => readBaseContext,
+  renderBaseContext: () => renderBaseContext,
+  summarizeManifest: () => summarizeManifest
 });
-var import_child_process6, REVIEW_PROMPT, MAX_REVIEW_DIFF_CHARS, ReviewerAdapter;
+function summarizeManifest(raw) {
+  try {
+    const pkg = JSON.parse(raw);
+    const out = {};
+    for (const k of MANIFEST_FIELDS) if (pkg[k] !== void 0) out[k] = pkg[k];
+    for (const k of ["dependencies", "devDependencies", "peerDependencies"]) {
+      const d = pkg[k];
+      if (d && typeof d === "object") out[k] = Object.keys(d);
+    }
+    return JSON.stringify(out, null, 2).slice(0, MAX_BASE_MANIFEST_CHARS);
+  } catch {
+    return raw.slice(0, MAX_BASE_MANIFEST_CHARS);
+  }
+}
+function renderBaseContext(files, manifest) {
+  if (files.length === 0 && !manifest) return "";
+  const lines = ["## Already on the base branch (before this change)"];
+  if (files.length > 0) {
+    const shown = files.slice(0, MAX_BASE_FILES);
+    lines.push("Files:", ...shown.map((f) => `- ${f}`));
+    if (files.length > shown.length) lines.push(`- (${files.length - shown.length} more not listed)`);
+  }
+  if (manifest) lines.push("", "package.json (the fields that say how it is entered and run):", "```json", manifest, "```");
+  return `${lines.join("\n")}
+
+`;
+}
+function readBaseContext(workdir, baseBranch) {
+  if (!baseBranch) return "";
+  const ref = `origin/${baseBranch}`;
+  const git = (args) => (0, import_child_process6.spawnSync)("git", args, { cwd: workdir, encoding: "utf-8", timeout: 3e4, maxBuffer: 2e7 });
+  const tree = git(["ls-tree", "-r", "--name-only", ref]);
+  const files = tree.status === 0 ? (tree.stdout ?? "").split("\n").map((f) => f.trim()).filter((f) => f && !/(^|\/)(node_modules|dist|\.next)\//.test(f) && !/(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml)$/.test(f)) : [];
+  const pkg = git(["show", `${ref}:package.json`]);
+  const manifest = pkg.status === 0 && (pkg.stdout ?? "").trim() ? summarizeManifest(pkg.stdout) : null;
+  return renderBaseContext(files, manifest);
+}
+function notesOf(v) {
+  const str = (x, n) => typeof x === "string" ? x.trim().slice(0, n) : "";
+  return {
+    feedback: str(v.general_feedback, 2e3),
+    missing: (Array.isArray(v.missing_criteria) ? v.missing_criteria : []).map((m) => str(m, 400)).filter(Boolean).slice(0, 20),
+    comments: (Array.isArray(v.inline_comments) ? v.inline_comments : []).map((c) => `${str(c?.file, 200)}:${Number(c?.line) || 0} ${str(c?.comment, 400)}`.trim()).slice(0, 20)
+  };
+}
+var import_child_process6, REVIEW_PROMPT, MAX_REVIEW_DIFF_CHARS, MAX_BASE_FILES, MAX_BASE_MANIFEST_CHARS, MANIFEST_FIELDS, ReviewerAdapter;
 var init_reviewer = __esm({
   "src/adapters/reviewer.ts"() {
     "use strict";
@@ -20816,13 +20867,16 @@ Review the following diff and evaluate it against the acceptance criteria.
 ## PRD Acceptance Criteria
 {criteria}
 
-{charter}## Diff
+{charter}{base}## Diff
 \`\`\`diff
 {diff}
 \`\`\`
 
-For each acceptance criterion, determine if it is satisfied by the diff.
-If a project charter is given, also check the diff against each of its rules (CH-n) and boundaries. A violation is a finding: name the rule key in the comment, and list it in missing_criteria as "CH-n: what is wrong".
+The diff shows only what this build changed. Files and package.json fields listed under "Already on the base branch" exist before this change: never report one of them as missing or ask for it to be added.
+
+For each acceptance criterion, determine if it is satisfied by the diff and the base branch together.
+If a project charter is given, also check the diff against each of its rules (CH-n or EC-n) and boundaries. A violation is a finding: name the rule key in the comment, and list it in missing_criteria as "CH-n: what is wrong".
+Name an acceptance criterion (AC-n) or a charter rule (CH-n, EC-n) ONLY when it is FAILED, and then list it in missing_criteria. Never write one of those keys for a criterion or rule that is satisfied. Observations that are not a failed criterion or a broken rule (style, naming, a suggestion) go in general_feedback and inline_comments without a key.
 Also check for:
 - Security issues (hardcoded secrets, SQL injection, XSS)
 - Missing error handling
@@ -20840,6 +20894,9 @@ Respond with ONLY valid JSON:
   ]
 }`;
     MAX_REVIEW_DIFF_CHARS = 4e4;
+    MAX_BASE_FILES = 300;
+    MAX_BASE_MANIFEST_CHARS = 3e3;
+    MANIFEST_FIELDS = ["name", "version", "type", "main", "module", "types", "bin", "exports", "files", "scripts", "engines"];
     ReviewerAdapter = {
       async run(ctx) {
         const { workdir, spec, llm, onEvent } = ctx;
@@ -20862,7 +20919,7 @@ Respond with ONLY valid JSON:
 ${charter.text}
 
 ` : "";
-        const prompt = REVIEW_PROMPT.replace("{criteria}", () => criteria).replace("{charter}", () => charterBlock).replace("{diff}", () => diff);
+        const prompt = REVIEW_PROMPT.replace("{criteria}", () => criteria).replace("{charter}", () => charterBlock).replace("{base}", () => readBaseContext(workdir, ctx.baseBranch)).replace("{diff}", () => diff);
         let verdict = { verdict: "comment", score: 0.5, missing_criteria: [], general_feedback: "Review failed", inline_comments: [] };
         const usage = {};
         try {
@@ -20891,7 +20948,8 @@ ${charter.text}
           filesChanged: [],
           missingCriteria: verdict.missing_criteria ?? [],
           errorMessage: approved ? void 0 : `Reviewer requested changes: ${verdict.general_feedback}`,
-          usage
+          usage,
+          reviewerNotes: approved ? void 0 : notesOf(verdict)
         };
       }
     };
@@ -22794,6 +22852,7 @@ async function sendComplete(session, payload) {
           } : void 0,
           error_message: payload.errorMessage,
           reviewer_verdict: payload.reviewerVerdict,
+          reviewer_notes: payload.reviewerNotes,
           criteria: payload.criteria
         })
       }
@@ -23118,6 +23177,7 @@ async function run2() {
     core2.warning(`[Forge] PR creation error: ${e}`);
   }
   let reviewerVerdict = "skipped";
+  let reviewerNotes;
   if (succeeded && prNumber && config.reviewerEnabled !== false) {
     try {
       core2.info("[Forge] Running Reviewer adapter\u2026");
@@ -23141,6 +23201,7 @@ async function run2() {
       const reviewResult = await ReviewerAdapter2.run(reviewCtx);
       addUsage(totalUsage, reviewResult.usage);
       reviewerVerdict = reviewResult.success ? "approved" : "changes_requested";
+      reviewerNotes = reviewResult.reviewerNotes;
       if (!reviewResult.success && reviewResult.errorMessage) {
         await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/issues/${prNumber}/comments`, {
           method: "POST",
@@ -23171,6 +23232,7 @@ _Missing criteria: ${(reviewResult.missingCriteria ?? []).join(", ")}_` })
     filesChanged,
     errorMessage: succeeded ? void 0 : finalResult?.errorMessage,
     reviewerVerdict,
+    reviewerNotes,
     criteria: lastCriteria
   });
   if (!succeeded) {
