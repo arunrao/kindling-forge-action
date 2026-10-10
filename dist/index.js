@@ -19845,6 +19845,7 @@ function createBranch(workdir, branchName) {
   run("git", ["checkout", "-b", branchName], workdir);
 }
 function getChangedFiles(workdir, baseBranch) {
+  (0, import_child_process.spawnSync)("git", ["add", "-N", "--", "."], { cwd: workdir, encoding: "utf-8" });
   const result = (0, import_child_process.spawnSync)("git", ["diff", "--name-only", `origin/${baseBranch}`], {
     cwd: workdir,
     encoding: "utf-8"
